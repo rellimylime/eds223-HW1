@@ -22,4 +22,4 @@ The data used is from the United States Environmental Protection Agency’s EJSc
 ##### References
 - [Assignment source link](https://github.com/EDS-223-Geospatial/EDS-223-Geospatial.github.io/blob/main/assignments/HW1.qmd)
 - [EPA EJScreen Site](https://19january2021snapshot.epa.gov/ejscreen_.html)
-- - **Citation**: United States Environmental Protection Agency. 2023. EJSCREEN 2023. Retrieved: October 6, 2025, from www.epa.gov/ejscreen
+- - **United States Environmental Protection Agency. 2023. EJSCREEN 2023. Retrieved: October 6, 2025, from www.epa.gov/ejscreen**

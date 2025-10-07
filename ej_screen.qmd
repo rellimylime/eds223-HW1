@@ -1,28 +1,130 @@
+---
+title: "Homework Assignment 1"
+author: "Emily Miller"
+date: "10/06/25"
+format: pdf
+execute: 
+  warning: false
+  message: false
+---
+## Load necessary libraries
 ```{r}
 library(tidyverse)
 library(sf)
 library(here)
 library(tmap)
+```
 
-
+## Read in data
+```{r}
+#| output: false
 # read in geodatabase of EJScreen data at the Census Block Group level
 ejscreen <- sf::st_read(here::here("data", "ejscreen","EJSCREEN_2023_BG_StatePct_with_AS_CNMI_GU_VI.gdb")) 
+```
 
+## Filter to Yolo County, California
+```{r}
 # filter to a state you are interested in
 california <- ejscreen %>%
   dplyr::filter(ST_ABBREV == "CA") 
 
 # filter to a county you are interested in
-santa_barbara <- ejscreen %>%
-  dplyr::filter(CNTY_NAME %in% c("Yolo"))
+yolo <- ejscreen %>%
+  dplyr::filter(CNTY_NAME %in% c("Yolo County"))
+```
 
+## Calculate average values for all variables within counties
+
+```{r}
 # find the average values for all variables within counties
 california_counties <- aggregate(california, by = list(california$CNTY_NAME), FUN = mean)
 
 ```
 
 ```{r}
+#| include: false
 
-
+print(california_counties$Group.1)
 ```
 
+## Re-name columns of interest for clarity
+
+```{r}
+# Rename some columns to make plot labeling easier
+yolo_clean <- yolo %>%
+  mutate('People of\n Color (%)' = PEOPCOLORPCT * 100,
+         'Particulate \nMatter (µg/m³):\n EJ Index' = D5_PM25
+,
+         'Proximity to traffic (m): \nEJ Index' = D2_PTRAF
+         )
+```
+
+```{r}
+#| include: false
+
+# Inspect values to plot
+summary(yolo_clean$`People of\n Color (%)`)
+summary(yolo_clean$`Particulate \nMatter (µg/m³):\n EJ Index`)
+summary(yolo_clean$`Proximity to traffic (m): \nEJ Index`)
+```
+
+## Visualize in Bivariate Maps
+
+```{r}
+map1 <- tm_shape(california, bbox = yolo) + tm_borders(lty="dotted", col="gray70") +
+  tm_graticules(alpha=.3) +
+  tm_shape(yolo_clean) +
+  tm_polygons(
+    lwd = .5,
+    fill = tm_vars(c("People of\n Color (%)",
+                     "Particulate \nMatter (µg/m³):\n EJ Index"),
+                   multivariate = TRUE),
+    fill.scale  = tm_scale_bivariate(values = "bluered"),
+    fill.legend = tm_legend(show.na = FALSE, width = 20)
+  ) +
+  tm_layout(legend.outside.position = c("right","center")) +
+  tm_title("Demographics of Yolo County: People of Color vs PM2.5 EJ Index", size=1, fontface="bold")
+
+map2 <- tm_shape(california, bbox = yolo) + tm_borders(lty="dotted", col="gray70") +
+  tm_graticules(alpha=.3) +
+  tm_shape(yolo_clean) +
+  tm_polygons(
+    lwd = .5,
+    fill = tm_vars(c("People of\n Color (%)",
+                     "Proximity to traffic (m): \nEJ Index"),
+                   multivariate = TRUE),
+    fill.scale  = tm_scale_bivariate(values = "bluered"),
+    fill.legend = tm_legend(show.na = FALSE, width = 20)
+  ) +
+  tm_layout(legend.outside.position = c("right","center")) +
+  tm_title("Demographics of Yolo County: People of Color vs Traffic Proximity EJ Index", 
+           size=1, 
+           fontface="bold")
+
+map3 <- tm_shape(california, bbox = yolo) + tm_borders(lty="dotted", col="gray70") +
+  tm_graticules(alpha=.3) +
+  tm_shape(yolo_clean) +
+  tm_polygons(
+    lwd = .5,
+    fill = tm_vars(c("Particulate \nMatter (µg/m³):\n EJ Index",
+                     "Proximity to traffic (m): \nEJ Index"),
+                   multivariate = TRUE),
+    fill.scale  = tm_scale_bivariate(values = "bluered"),
+    fill.legend = tm_legend(show.na = FALSE, width = 20)
+  ) +
+  tm_layout(legend.outside.position = c("right","center")) +
+  tm_title("Demographics of Yolo County: Particulate Matter vs Traffic Proximity EJ Index", 
+           size=1, 
+           fontface="bold")
+```
+
+```{r}
+map1
+map2
+```
+
+## Overview
+
+The first map compares percent People of Color with the Traffic Proximity EJ Index. Tiles get darker as both the share of People of Color and traffic burden increase, so the darkest squares flag block groups that sit near higher volume roads and also have more residents of color. The second map pairs percent People of Color with the PM2.5 EJ Index. Again, darker means both are high, so the darkest squares mark places with more residents of color and higher fine-particle concentrations.
+
+Taken together, the maps show where racial composition coincides with transportation-related burdens. Where the same tracts are dark in both maps, those areas face multiple, related pressures from traffic and particulate pollution. Where tracts are dark only in the traffic map, proximity to roads is the dominant issue. Where tracts are dark only in the PM2.5 map, particulate exposure likely comes from sources other than nearby traffic.

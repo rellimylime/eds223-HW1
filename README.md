@@ -7,12 +7,13 @@
 ### Repository Structure:
 ```
 EDS223-HW1
+|   .gitignore
 │   README.md
-│   ej_screen.qmd
-|   ej_screen.pdf
-│   Rmd/Proj files
-└───data
-     └───ejscreen
+|   eds223-HW1.Rproj
+│   ej_screen.pdf
+|   ej_screen.qmd
+#└───data
+#     └───ejscreen
 ```
 ### Data
 The data used is from the United States Environmental Protection Agency’s EJScreen: Environmental Justice Screening and Mapping Tool. The folder containing the data is available for download [here](https://drive.google.com/file/d/1nG6Nj1bXfzQFOVMO8Km3eNy4SWu1YcIQ/view?usp=sharing) and contains:

@@ -19,7 +19,7 @@ EDS223-HW1
      └───ejscreen
 ```
 
-*Note:** The `data/` folder is included in `.gitignore` and is not tracked by version control due to file size. See below for data access instructions.
+**Note:** The `data/` folder is included in `.gitignore` and is not tracked by version control due to file size. See below for data access instructions.
 
 ## Data
 
